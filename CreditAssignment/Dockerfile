@@ -10,7 +10,7 @@ RUN dotnet publish -c Release -o /app/publish
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 
-# Render ustawia PORT, wiêc musimy s³uchaæ na tym porcie
+
 ENV ASPNETCORE_URLS=http://0.0.0.0:$PORT
 EXPOSE 5000
 

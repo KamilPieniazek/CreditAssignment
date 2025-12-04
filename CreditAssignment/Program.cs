@@ -4,30 +4,57 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// ==================== SERVICES ====================
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<ShoppingListService>();
+// PostgreSQL
+var connectionString = builder.Configuration.GetConnectionString("DbConnection")
+    ?? Environment.GetEnvironmentVariable("DATABASE_URL");
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection")));
+    options.UseNpgsql(connectionString));
+
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod());
+});
+
+
+builder.Services.AddScoped<ShoppingListService>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// ==================== PIPELINE ====================
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
+
 app.UseHttpsRedirection();
 
+app.UseCors();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// ============ PORT DLA RENDERA ============
+if (!app.Environment.IsDevelopment())
+{
+    var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+    app.Urls.Add($"http://0.0.0.0:{port}");
+}
 
 app.Run();
