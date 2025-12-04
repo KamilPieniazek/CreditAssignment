@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CreditAssignment.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/list")]
     [ApiController]
     public class ShoppingListController : ControllerBase
     {
