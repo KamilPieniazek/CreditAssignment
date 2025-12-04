@@ -1,0 +1,10 @@
+@CreditAssignment_HostAddress = https://localhost:7124
+
+GET {{CreditAssignment_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+
+GET {{CreditAssignment_HostAddress}}/weatherforecast
+
+###
