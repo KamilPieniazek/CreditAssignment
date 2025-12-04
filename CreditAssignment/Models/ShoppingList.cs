@@ -6,7 +6,7 @@ namespace CreditAssignment.Models
     {
         public Guid Id { get; set; }
         public required string Name { get; set; }
-        public DateTime CreationTimeStamp { get; set; }
+        public long CreationTimeStamp { get; set; }
         public ICollection<Product> Products { get; set; } = [];
     }
 }

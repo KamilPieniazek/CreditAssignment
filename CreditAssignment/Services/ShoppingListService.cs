@@ -34,7 +34,7 @@ namespace CreditAssignment.Services
             var list = new ShoppingList
             {
                 Name = request.Name,
-                CreationTimeStamp = DateTime.Now,
+                CreationTimeStamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
                 Products = []
             };
 
