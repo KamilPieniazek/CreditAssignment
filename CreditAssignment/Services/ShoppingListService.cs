@@ -9,10 +9,7 @@ namespace CreditAssignment.Services
     public class ShoppingListService
     {
         private readonly ApplicationDbContext context;
-        public ShoppingListService(ApplicationDbContext context)
-        {
-            this.context = context;
-        }
+        public ShoppingListService(ApplicationDbContext context) => this.context = context;
 
         public List<ShoppingList> GetAllShoppinhLists()
         {
@@ -106,20 +103,9 @@ namespace CreditAssignment.Services
             var product = list.Products.FirstOrDefault(p => p.Id == productId)
                 ?? throw new NotFoundException($"Product {productId} not found in list {listId}");
 
-            if (!string.IsNullOrWhiteSpace(request.Name))
-            {
-                product.Name = request.Name;
-            }
-
-            if (request.Quantity.HasValue)
-            {
-                product.quantity = request.Quantity.Value;
-            }
-
-            if (request.IsBought.HasValue)
-            {
-                product.IsBought = request.IsBought.Value;
-            }
+            product.Name = string.IsNullOrWhiteSpace(request.Name) ? product.Name : request.Name;
+            product.quantity = request.Quantity.HasValue ? request.Quantity.Value : product.quantity;
+            product.IsBought = request.IsBought.HasValue ? request.IsBought.Value : product.IsBought;
 
             context.SaveChanges();
 
@@ -134,13 +120,10 @@ namespace CreditAssignment.Services
                 ?? throw new NotFoundException($"List with id '{listId}' not found");
 
             var product = list.Products
-                .FirstOrDefault(p => p.Id == productId);
-
-            if (product == null)
+                .FirstOrDefault(p => p.Id == productId) ?? 
                 throw new NotFoundException($"Product with id '{productId}' not found in this list");
-
+            
             list.Products.Remove(product);
-
             context.SaveChanges();
         }
     }

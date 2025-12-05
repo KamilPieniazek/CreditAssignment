@@ -6,14 +6,10 @@ namespace CreditAssignment.Controllers
 {
     [Route("api/list")]
     [ApiController]
-    public class ShoppingListController : ControllerBase
+    public class ShoppingListController(
+            ShoppingListService shoppingListService) : ControllerBase
     {
-        private readonly ShoppingListService _shoppingListService;
-            public ShoppingListController(
-                ShoppingListService shoppingListService)
-            {
-                this._shoppingListService = shoppingListService;
-            }
+        private readonly ShoppingListService _shoppingListService = shoppingListService;
 
         [HttpGet]
         public IActionResult GetAllLists()
@@ -47,13 +43,13 @@ namespace CreditAssignment.Controllers
                 Id = list.Id,
                 Name = list.Name,
                 CreationTimeStamp = list.CreationTimeStamp,
-                Products = list.Products.Select(p => new ProductResponse
+                Products = [.. list.Products.Select(p => new ProductResponse
                 {
                     Id = p.Id,
                     Name = p.Name,
                     Quantity = p.quantity,
                     IsBought = p.IsBought
-                }).ToList()
+                })]
             };
 
             return Ok(response);
