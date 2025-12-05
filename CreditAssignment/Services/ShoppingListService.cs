@@ -96,5 +96,47 @@ namespace CreditAssignment.Services
             return product;
         }
 
+        public Product UpdateProductInList(Guid listId, Guid productId, UpdateProductRequest request)
+        {
+            var list = context.ShoppingLists
+                .Include(l => l.Products)
+                .FirstOrDefault(l => l.Id == listId)
+                ?? throw new NotFoundException($"Shopping list {listId} not found");
+
+            var product = list.Products.FirstOrDefault(p => p.Id == productId)
+                ?? throw new NotFoundException($"Product {productId} not found in list {listId}");
+
+            if (!string.IsNullOrWhiteSpace(request.Name))
+            {
+                product.Name = request.Name;
+            }
+
+            if (request.Quantity.HasValue)
+            {
+                product.quantity = request.Quantity.Value;
+            }
+
+            context.SaveChanges();
+
+            return product;
+        }
+
+        public void DeleteProduct(Guid listId, Guid productId)
+        {
+            var list = context.ShoppingLists
+                .Include(l => l.Products)
+                .FirstOrDefault(l => l.Id == listId)
+                ?? throw new NotFoundException($"List with id '{listId}' not found");
+
+            var product = list.Products
+                .FirstOrDefault(p => p.Id == productId);
+
+            if (product == null)
+                throw new NotFoundException($"Product with id '{productId}' not found in this list");
+
+            list.Products.Remove(product);
+
+            context.SaveChanges();
+        }
     }
 }

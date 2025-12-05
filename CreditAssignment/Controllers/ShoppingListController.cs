@@ -109,5 +109,28 @@ namespace CreditAssignment.Controllers
 
             return Ok(response);
         }
+
+        [HttpPatch("{listId:guid}/products/{productId:guid}")]
+        public IActionResult UpdateProductInList(Guid listId, Guid productId, [FromBody] UpdateProductRequest request)
+        {
+            var product = _shoppingListService.UpdateProductInList(listId, productId, request);
+
+            var response = new ProductResponse
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Quantity = product.quantity,
+                IsBought = product.IsBought
+            };
+
+            return Ok(response);
+        }
+
+        [HttpDelete("{listId}/products/{productId}")]
+        public IActionResult DeleteProduct(Guid listId, Guid productId)
+        {
+            _shoppingListService.DeleteProduct(listId, productId);
+            return NoContent();
+        }
     }
 }
