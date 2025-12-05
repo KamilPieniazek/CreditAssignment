@@ -116,6 +116,11 @@ namespace CreditAssignment.Services
                 product.quantity = request.Quantity.Value;
             }
 
+            if (request.IsBought.HasValue)
+            {
+                product.IsBought = request.IsBought.Value;
+            }
+
             context.SaveChanges();
 
             return product;
