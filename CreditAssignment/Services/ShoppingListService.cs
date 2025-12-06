@@ -18,12 +18,8 @@ namespace CreditAssignment.Services
 
         public ShoppingList GetById(Guid id)
         {
-            var list = context.ShoppingLists
-                .Include(l => l.Products)
-                .FirstOrDefault(e => e.Id == id)
-                ?? throw new NotFoundException($"List with id '{id}' not found.");
-
-            return list;
+           return (GetListOrThrow(id));
+     
         }
 
         public ShoppingList CreateShoppingList(ShoppingListRequest request)
@@ -43,8 +39,7 @@ namespace CreditAssignment.Services
 
         public ShoppingList UpdateShoppingList(Guid id, ShoppingListRequest request)
         {
-            var list = context.ShoppingLists.FirstOrDefault(e => e.Id == id)
-                ?? throw new NotFoundException($"List with id '{id}' not found.");
+            var list = GetListOrThrow(id);
 
             list.Name = request.Name;
             context.SaveChanges();
@@ -54,8 +49,7 @@ namespace CreditAssignment.Services
 
         public void DeleteShoppingList(Guid id)
         {
-            var list = context.ShoppingLists.FirstOrDefault(e => e.Id == id)
-                ?? throw new NotFoundException($"List with id '{id}' not found.");
+            var list = GetListOrThrow(id);
 
             context.ShoppingLists.Remove(list);  
             context.SaveChanges();
@@ -63,19 +57,14 @@ namespace CreditAssignment.Services
 
         public List<Product> GetProductsForList(Guid listId)
         {
-            var list = context.ShoppingLists
-                .Include(l => l.Products)
-                .FirstOrDefault(e => e.Id == listId)
-                ?? throw new NotFoundException($"List with id '{listId}' not found.");
+            var list = GetListOrThrow(listId);
 
             return [.. list.Products];
         }
 
         public Product AddProductToList(Guid listId, ProductRequest request)
         {
-            var list = context.ShoppingLists
-                .FirstOrDefault(e => e.Id == listId)
-                ?? throw new NotFoundException($"List with id '{listId}' not found.");
+            var list = GetListOrThrow(listId);
 
             var product = new Product
             {
@@ -95,13 +84,8 @@ namespace CreditAssignment.Services
 
         public Product UpdateProductInList(Guid listId, Guid productId, UpdateProductRequest request)
         {
-            var list = context.ShoppingLists
-                .Include(l => l.Products)
-                .FirstOrDefault(l => l.Id == listId)
-                ?? throw new NotFoundException($"Shopping list {listId} not found");
-
-            var product = list.Products.FirstOrDefault(p => p.Id == productId)
-                ?? throw new NotFoundException($"Product {productId} not found in list {listId}");
+            var list = GetListOrThrow(listId);
+            var product = GetProductOrThrow(list, productId);
 
             product.Name = string.IsNullOrWhiteSpace(request.Name) ? product.Name : request.Name;
             product.quantity = request.Quantity.HasValue ? request.Quantity.Value : product.quantity;
@@ -114,17 +98,23 @@ namespace CreditAssignment.Services
 
         public void DeleteProduct(Guid listId, Guid productId)
         {
-            var list = context.ShoppingLists
-                .Include(l => l.Products)
-                .FirstOrDefault(l => l.Id == listId)
-                ?? throw new NotFoundException($"List with id '{listId}' not found");
+            var list = GetListOrThrow(listId);
+            var product = GetProductOrThrow(list, productId);
 
-            var product = list.Products
-                .FirstOrDefault(p => p.Id == productId) ?? 
-                throw new NotFoundException($"Product with id '{productId}' not found in this list");
-            
             list.Products.Remove(product);
             context.SaveChanges();
         }
+
+        private ShoppingList GetListOrThrow(Guid listId)
+        {
+            return context.ShoppingLists
+                    .Include(l => l.Products)
+                    .FirstOrDefault(l => l.Id == listId)
+                    ?? throw new NotFoundException($"List with id '{listId}' not found.");
+        }
+
+        private static Product GetProductOrThrow(ShoppingList list, Guid productId) =>
+            list.Products.FirstOrDefault(p => p.Id == productId)
+                ?? throw new NotFoundException($"Product with id '{productId}' not found in this list.");
     }
 }

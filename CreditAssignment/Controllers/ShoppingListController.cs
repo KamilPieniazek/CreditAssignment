@@ -21,13 +21,13 @@ namespace CreditAssignment.Controllers
                 Id = l.Id,
                 Name = l.Name,
                 CreationTimeStamp = l.CreationTimeStamp,
-                Products = l.Products.Select(p => new ProductResponse
+                Products = [.. l.Products.Select(p => new ProductResponse
                 {
                     Id = p.Id,
                     Name = p.Name,
                     Quantity = p.quantity,
                     IsBought = p.IsBought
-                }).ToList()
+                })]
             }).ToList();
 
             return Ok(response);
@@ -36,7 +36,7 @@ namespace CreditAssignment.Controllers
         [HttpGet("{id:guid}")]
         public IActionResult GetListById(Guid id)
         {
-            var list = _shoppingListService.GetById(id); // już z Include
+            var list = _shoppingListService.GetById(id);
 
             var response = new ShoppingListResposne
             {
@@ -60,7 +60,6 @@ namespace CreditAssignment.Controllers
         {
             return Ok(_shoppingListService.CreateShoppingList(request));
         }
-
 
         [HttpPut("update/{id:guid}")]
         public IActionResult UpdateShoppingList(Guid id, [FromBody]ShoppingListRequest request)

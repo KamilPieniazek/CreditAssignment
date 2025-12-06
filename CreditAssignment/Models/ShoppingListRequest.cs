@@ -1,7 +1,7 @@
 ﻿namespace CreditAssignment.Models
 {
     public class ShoppingListRequest
-    {
-        public required string Name { get; set; }
+    {  
+       public required string Name { get; set; }
     }
 }
