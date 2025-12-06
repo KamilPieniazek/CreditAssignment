@@ -71,8 +71,9 @@ namespace CreditAssignment.Controllers
         [HttpDelete("remove/{id:guid}")]
         public IActionResult DeleteShoppingList(Guid id)
         {
-            _shoppingListService.DeleteeShoppingList(id);
-            return NoContent();
+            _shoppingListService.DeleteShoppingList(id);
+
+           return NoContent();
         }
 
         [HttpGet("{listId:guid}/products")]

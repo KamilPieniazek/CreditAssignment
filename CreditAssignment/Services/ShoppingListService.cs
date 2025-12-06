@@ -52,7 +52,7 @@ namespace CreditAssignment.Services
             return list;
         }
 
-        public void DeleteeShoppingList(Guid id)
+        public void DeleteShoppingList(Guid id)
         {
             var list = context.ShoppingLists.FirstOrDefault(e => e.Id == id)
                 ?? throw new NotFoundException($"List with id '{id}' not found.");
